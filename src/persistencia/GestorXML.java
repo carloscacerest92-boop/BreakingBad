@@ -111,4 +111,15 @@ public class GestorXML {
                 System.err.println("Fallo al leer la estructura XML: " + e.getMessage());
             }
     }
+
+    public void exportarElementosAfectados(String elemento) {
+        try (java.io.FileWriter fw = new java.io.FileWriter("datos/elementos_afectados.xml")) {
+            fw.write("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n");
+            fw.write("<Incidente>\n");
+            fw.write("  <ElementoComprometido>" + elemento + "</ElementoComprometido>\n");
+            fw.write("</Incidente>");
+        } catch (java.io.IOException e) {
+            System.err.println("Fallo al exportar el XML de daños.");
+        }
+    }
     }

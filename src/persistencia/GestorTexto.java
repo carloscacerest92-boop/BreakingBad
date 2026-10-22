@@ -55,4 +55,12 @@ public class GestorTexto {
         }
         return Collections.emptyList();
     }
+
+    public void generarInformeForense(String contenido) {
+        try (java.io.FileWriter fw = new java.io.FileWriter("datos/informe_forense.txt")) {
+            fw.write(contenido);
+        } catch (java.io.IOException e) {
+            System.err.println("Fallo al escribir el informe: " + e.getMessage());
+        }
+    }
 }

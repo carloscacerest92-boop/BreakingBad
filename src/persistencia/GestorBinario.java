@@ -60,4 +60,12 @@ public class GestorBinario {
             return null;
         }
     }
+
+    public void exportarAnomaliaBinaria(modelo.Sensores sensor) {
+        try (java.io.ObjectOutputStream oos = new java.io.ObjectOutputStream(new java.io.FileOutputStream("datos/anomalia_aislada.dat"))) {
+            oos.writeObject(sensor);
+        } catch (java.io.IOException e) {
+            System.err.println("Fallo al aislar la evidencia binaria.");
+        }
+    }
 }

@@ -4,31 +4,45 @@ import modelo.Sensores;
 import persistencia.GestorBinario;
 import persistencia.GestorTexto;
 import persistencia.GestorXML;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import java.util.List;
 
 public class MainAnalizador {
 
+    private static final Logger logger = LogManager.getLogger(MainAnalizador.class);
+
     public static void main(String[] args) {
+        logger.info("Iniciando secuencia de auditoria forense.");
+
         GestorTexto bitacora = new GestorTexto();
         GestorBinario telemetria = new GestorBinario();
         GestorXML instalaciones = new GestorXML();
 
+        logger.debug("Cargando evidencias persistidas por el motor de simulacion.");
+        List<String> registros = bitacora.leerBitacoraCompleta();
+        Sensores sensorCritico = telemetria.leerRegistro(1);
         instalaciones.leerConfiguracionEscenario();
 
-        System.out.println("\n--- EXTRACCIÓN DE LA BITÁCORA ---");
-        List<String> registros = bitacora.leerBitacoraCompleta();
+        boolean alertaTermicaDetectada = false;
         for (String linea : registros) {
-            System.out.println(linea);
+            if (linea.contains("ALERTA DEL MOTOR")) {
+                alertaTermicaDetectada = true;
+                break;
+            }
         }
 
-        System.out.println("\n--- AUDITORÍA DE TELEMETRÍA BINARIA ---");
-        Sensores sensorCritico = telemetria.leerRegistro(1);
+        if (alertaTermicaDetectada && sensorCritico != null && sensorCritico.getTemperaturaActual() > 100.0f) {
+            logger.warn("Patron de catastrofe quimica confirmado. Generando ficheros de conclusion.");
 
-        if (sensorCritico != null) {
-            System.out.println("Datos del sector crítico recuperados mediante salto de memoria:");
-            System.out.println("Temperatura del núcleo: " + sensorCritico.getTemperaturaActual() + " ºC");
-            System.out.println("Presión interna: " + sensorCritico.getPresionActual() + " PSI");
-            System.out.println("Voltaje perimetral: " + sensorCritico.getVoltajeCerco() + " V");
+            bitacora.generarInformeForense("INCIDENTE DETECTADO: Falla de contencion termica en el reactor principal.\nEFECTOS: Riesgo critico de fusion. Cierre de seguridad activado en Autocaravana.");
+            telemetria.exportarAnomaliaBinaria(sensorCritico);
+            instalaciones.exportarElementosAfectados("Autocaravana");
+
+            System.out.println("Auditoria finalizada. Revisa el directorio 'datos' para consultar los archivos resultantes.");
+        } else {
+            logger.info("Los datos procesados no coinciden con ningun incidente clasificado.");
         }
     }
 }
