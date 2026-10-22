@@ -3,6 +3,7 @@ package main;
 import modelo.Sensores;
 import persistencia.GestorBinario;
 import persistencia.GestorTexto;
+import persistencia.GestorXML;
 import java.util.List;
 
 public class MainAnalizador {
@@ -10,8 +11,11 @@ public class MainAnalizador {
     public static void main(String[] args) {
         GestorTexto bitacora = new GestorTexto();
         GestorBinario telemetria = new GestorBinario();
+        GestorXML instalaciones = new GestorXML();
 
-        System.out.println("--- EXTRACCIÓN DE LA BITÁCORA ---");
+        instalaciones.leerConfiguracionEscenario();
+
+        System.out.println("\n--- EXTRACCIÓN DE LA BITÁCORA ---");
         List<String> registros = bitacora.leerBitacoraCompleta();
         for (String linea : registros) {
             System.out.println(linea);

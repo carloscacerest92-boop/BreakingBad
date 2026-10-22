@@ -2,6 +2,9 @@ package persistencia;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
+
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.transform.OutputKeys;
@@ -9,6 +12,7 @@ import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
+import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -73,4 +77,38 @@ public class GestorXML {
             System.err.println("Error al generar el XML de la infraestructura: " + e.getMessage());
         }
     }
-}
+
+        public void leerConfiguracionEscenario() {
+            try {
+                File archivoFisico = RUTA_XML.toFile();
+                if (!archivoFisico.exists()) {
+                    System.out.println("El archivo de configuración XML no se encuentra alojado en el disco.");
+                    return;
+                }
+
+                DocumentBuilderFactory factoria = DocumentBuilderFactory.newInstance();
+                DocumentBuilder constructor = factoria.newDocumentBuilder();
+                Document documento = constructor.parse(archivoFisico);
+
+                documento.getDocumentElement().normalize();
+
+                NodeList listaLaboratorios = documento.getElementsByTagName("laboratorio");
+                Node nodoPrincipal = listaLaboratorios.item(0);
+
+                if (nodoPrincipal.getNodeType() == Node.ELEMENT_NODE) {
+                    Element elemento = (Element) nodoPrincipal;
+
+                    String tipo = elemento.getAttribute("tipo");
+                    String capacidad = elemento.getElementsByTagName("capacidad_presion").item(0).getTextContent();
+                    String extractor = elemento.getElementsByTagName("extractor_aire").item(0).getTextContent();
+
+                    System.out.println("--- CONFIGURACIÓN ESTRUCTURAL (XML) ---");
+                    System.out.println("Instalación registrada: " + tipo);
+                    System.out.println("Límite de presión térmica: " + capacidad + " PSI");
+                    System.out.println("Estado del extractor: " + extractor);
+                }
+            } catch (Exception e) {
+                System.err.println("Fallo al leer la estructura XML: " + e.getMessage());
+            }
+    }
+    }
