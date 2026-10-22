@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration status="WARN">
+    <Appenders>
+        <Console name="Consola" target="SYSTEM_OUT">
+            <PatternLayout pattern="%d{HH:mm:ss.SSS} [%t] %-5level %logger{36} - %msg%n"/>
+        </Console>
+
+        <File name="EvidenciaEjecucion" fileName="logs/evidencias/ejecucion_${date:dd-MM-yyyy_HH-mm-ss}.log">
+            <PatternLayout pattern="%d{yyyy-MM-dd HH:mm:ss} %-5level %logger{36} - %msg%n"/>
+        </File>
+
+        <RollingFile name="ArchivoRotatorio"
+                     fileName="logs/runtime/aplicacion.log"
+                     filePattern="logs/runtime/aplicacion-%d{yyyy-MM-dd}-%i.log.gz">
+            <PatternLayout pattern="%d{yyyy-MM-dd HH:mm:ss} %-5level %logger{36} - %msg%n"/>
+            <Policies>
+                <SizeBasedTriggeringPolicy size="1 MB"/>
+            </Policies>
+            <DefaultRolloverStrategy max="5"/>
+        </RollingFile>
+    </Appenders>
+
+    <Loggers>
+        <Root level="info">
+            <AppenderRef ref="Consola"/>
+            <AppenderRef ref="EvidenciaEjecucion"/>
+            <AppenderRef ref="ArchivoRotatorio"/>
+        </Root>
+    </Loggers>
+</Configuration>
